@@ -290,7 +290,7 @@
             if (!sem) return;
             const data = calculateGPA(sem.subjects);
             const isQuickAdd = isQuickAddSemester(sem);
-            const typeLabel = isQuickAdd ? ' (Quick Add)' : '';
+            const typeLabel = isQuickAdd ? ' (QA)' : '';
             const subjectDisplay = isQuickAdd ? '—' : sem.subjects.length;
             
             html += `
