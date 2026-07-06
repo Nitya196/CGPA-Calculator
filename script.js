@@ -155,7 +155,7 @@
     }
 
     function createNewSemester(name) {
-        const id = 'sem_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+        const id = 'sem_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
         semesters[id] = { id, name, subjects: [] };
         semesterOrder.push(id);
         currentSemesterId = id;
@@ -178,7 +178,6 @@
     function updateAllGradeDropdowns() {
         populateGradeDropdown(subjectGrade, currentScale);
         populateGradeDropdown(futureGpaSelect, currentScale);
-        // Update footer
         const config = getScaleConfig();
         footerNote.textContent = config.footer;
     }
@@ -325,7 +324,7 @@
             if (newScale !== currentScale) {
                 currentScale = newScale;
                 updateAllGradeDropdowns();
-                // Convert existing grades to new scale
+                // Convert existing grades to new scale (find closest match)
                 convertAllGrades();
                 renderSubjects();
                 updateStatsAndCGPA();
@@ -336,12 +335,10 @@
 
     function convertAllGrades() {
         const config = getScaleConfig();
-        // Convert all subject grades in all semesters
         semesterOrder.forEach(id => {
             const sem = semesters[id];
             if (sem) {
                 sem.subjects.forEach(subject => {
-                    // Find closest matching grade in new scale
                     let closest = config.grades[0];
                     let minDiff = Infinity;
                     config.grades.forEach(g => {
@@ -433,9 +430,11 @@
     }
 
     function quickAddGpa() {
+        const config = getScaleConfig();
         quickGpaModal.style.display = 'flex';
         quickGpaInput.value = '';
         quickCreditsInput.value = '';
+        quickGpaInput.placeholder = 'e.g. ' + (config.maxGpa / 2).toFixed(1);
         quickGpaInput.focus();
     }
 
@@ -518,6 +517,7 @@
     }
 
     // ---------- Event binding ----------
+    // Semester selector change
     semesterSelect.addEventListener('change', function() {
         currentSemesterId = this.value;
         renderSubjects();
@@ -530,10 +530,12 @@
         radio.addEventListener('change', handleScaleChange);
     });
 
+    // Semester actions
     addSemesterBtn.addEventListener('click', addSemester);
     renameSemesterBtn.addEventListener('click', renameSemester);
     deleteSemesterBtn.addEventListener('click', deleteSemester);
 
+    // Subject actions
     addSubjectBtn.addEventListener('click', addSubject);
     subjectName.addEventListener('keydown', (e) => { if (e.key === 'Enter') addSubject(); });
     subjectCredits.addEventListener('keydown', (e) => { if (e.key === 'Enter') addSubject(); });
@@ -542,6 +544,7 @@
     clearSemesterBtn.addEventListener('click', clearSemester);
     quickAddGpaBtn.addEventListener('click', quickAddGpa);
 
+    // Quick GPA modal
     quickGpaCancel.addEventListener('click', () => { quickGpaModal.style.display = 'none'; });
     quickGpaConfirm.addEventListener('click', confirmQuickAddGpa);
     quickGpaModal.addEventListener('click', function(e) {
@@ -550,6 +553,7 @@
     quickGpaInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') confirmQuickAddGpa(); });
     quickCreditsInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') confirmQuickAddGpa(); });
 
+    // Future actions
     addFutureBtn.addEventListener('click', addFuture);
     futureSemName.addEventListener('keydown', (e) => { if (e.key === 'Enter') addFuture(); });
     futureCredits.addEventListener('keydown', (e) => { if (e.key === 'Enter') addFuture(); });
@@ -559,12 +563,11 @@
     clearFutureBtn.addEventListener('click', clearFuture);
 
     // ---------- Initialization ----------
-    // Set default scale
     currentScale = '4.0';
     document.querySelector('input[name="scale"][value="4.0"]').checked = true;
     updateAllGradeDropdowns();
 
-    // Initial demo data
+    // Initial demo data with sample semesters
     const sem1 = createNewSemester('Semester 1');
     semesters[sem1].subjects = [
         { id: idCounter++, name: 'Mathematics', credits: 3, gradePoint: 3.7 },
