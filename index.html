@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GPA · CGPA calculator + what-if</title>
+    <!-- External CSS -->
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div class="card">
+        <h1>📊 GPA · CGPA <small>calculator + what‑if</small></h1>
+        <div class="subhead">Add subjects with credits &amp; grades · see semester GPA &amp; running CGPA · simulate
+            future semesters</div>
+
+        <div class="grid-2">
+            <!-- LEFT: current semester -->
+            <div class="panel">
+                <h2>📘 Current semester</h2>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Subject</label>
+                        <input type="text" id="subjectName" placeholder="e.g. Maths" value="Maths" />
+                    </div>
+                    <div class="input-group">
+                        <label>Credits</label>
+                        <input type="number" id="subjectCredits" placeholder="3" value="3" min="0.5" step="0.5" />
+                    </div>
+                    <div class="input-group grade-select">
+                        <label>Grade</label>
+                        <select id="subjectGrade">
+                            <option value="4.0">A (4.0)</option>
+                            <option value="3.7">A- (3.7)</option>
+                            <option value="3.3">B+ (3.3)</option>
+                            <option value="3.0" selected>B (3.0)</option>
+                            <option value="2.7">B- (2.7)</option>
+                            <option value="2.3">C+ (2.3)</option>
+                            <option value="2.0">C (2.0)</option>
+                            <option value="1.7">C- (1.7)</option>
+                            <option value="1.0">D (1.0)</option>
+                            <option value="0.0">F (0.0)</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="addSubjectBtn">+ Add</button>
+                </div>
+
+                <div id="subjectListContainer" class="subject-list">
+                    <div class="empty-message">No subjects added yet.</div>
+                </div>
+
+                <div class="stats" id="currentStats">
+                    <span>📈 Semester GPA <span class="value" id="semesterGpa">0.00</span></span>
+                    <span>📚 Total credits <span class="value" id="semesterCredits">0</span></span>
+                </div>
+                <button class="btn btn-outline btn-sm" id="clearSemesterBtn" style="margin-top: 6px;">Clear
+                    semester</button>
+            </div>
+
+            <!-- RIGHT: CGPA & what-if -->
+            <div class="panel">
+                <h2>📌 CGPA &amp; what‑if</h2>
+
+                <div style="background:#eef3fa; border-radius:40px; padding: 12px 18px; margin-bottom: 18px;">
+                    <div style="display:flex; justify-content:space-between; flex-wrap:wrap;">
+                        <span>📅 Running CGPA</span>
+                        <span class="value" id="cgpaDisplay" style="font-weight:700; font-size:1.4rem;">0.00</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-size:0.9rem; color:#295072;">
+                        <span>Total credits: <span id="totalCreditsCgpa">0</span></span>
+                        <span>Total grade points: <span id="totalPointsCgpa">0.0</span></span>
+                    </div>
+                </div>
+
+                <!-- what-if future semesters -->
+                <div class="whatif-area">
+                    <h3>🔮 What‑if simulation</h3>
+                    <div id="futureSemestersContainer">
+                        <div class="empty-message" id="futureEmpty">No future semesters. Add one below.</div>
+                    </div>
+
+                    <div class="flex-row mt-1">
+                        <div class="input-group" style="flex:1;">
+                            <label>Semester name</label>
+                            <input type="text" id="futureSemName" placeholder="e.g. Sem 5" value="Future Sem" />
+                        </div>
+                        <div class="input-group" style="flex:0 0 80px;">
+                            <label>Credits</label>
+                            <input type="number" id="futureCredits" placeholder="15" value="15" min="1" step="1" />
+                        </div>
+                        <div class="input-group grade-select" style="flex:0 0 100px;">
+                            <label>Expected GPA</label>
+                            <select id="futureGpaSelect">
+                                <option value="4.0">4.0</option>
+                                <option value="3.7">3.7</option>
+                                <option value="3.3">3.3</option>
+                                <option value="3.0" selected>3.0</option>
+                                <option value="2.7">2.7</option>
+                                <option value="2.3">2.3</option>
+                                <option value="2.0">2.0</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-success" id="addFutureBtn">+ Add</button>
+                    </div>
+                    <div style="margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+                        <button class="btn btn-primary" id="simulateBtn">📊 Simulate CGPA</button>
+                        <button class="btn btn-outline btn-sm" id="clearFutureBtn">Clear all</button>
+                        <span id="simulatedResult"
+                            style="font-weight:600; margin-left: auto; background:#dce8f5; padding:4px 16px; border-radius:30px;">—</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-note">Grades: A=4.0 · A-=3.7 · B+=3.3 · B=3.0 · B-=2.7 · C+=2.3 · C=2.0 · C-=1.7 · D=1.0 ·
+            F=0.0</div>
+    </div>
+
+    <!-- External JavaScript -->
+    <script src="script.js"></script>
+</body>
+
+</html>
