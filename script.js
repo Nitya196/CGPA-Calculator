@@ -8,7 +8,7 @@
     let futureSemesters = [];
     let currentScale = '4.0';
 
-    // ---------- Grade mappings for different scales ----------
+    // ---------- Grade mappings for different scales -------
     const gradeMappings = {
         '4.0': {
             grades: [
