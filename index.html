@@ -9,21 +9,7 @@
 <body>
     <div class="card">
         <h1>GPA / CGPA Calculator</h1>
-        <div class="subhead">Manage each semester separately · add subjects with credits and grades · see CGPA · simulate future semesters</div>
-
-        <!-- Top bar: semester selector + actions -->
-        <div class="top-bar">
-            <div class="sem-selector">
-                <label for="semesterSelect">Semester:</label>
-                <select id="semesterSelect"></select>
-                <button class="btn btn-sm btn-primary" id="addSemesterBtn">+ New Sem</button>
-                <button class="btn btn-sm btn-outline" id="renameSemesterBtn">Rename</button>
-                <button class="btn btn-sm btn-danger" id="deleteSemesterBtn">Delete</button>
-            </div>
-            <div style="margin-left:auto; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-                <span class="badge-sem" id="semCountBadge">0 semesters</span>
-            </div>
-        </div>
+        <div class="subhead">Manage semesters · add subjects with credits and grades · track CGPA · simulate future semesters</div>
 
         <!-- Scale selector -->
         <div class="scale-bar">
@@ -36,14 +22,35 @@
             </div>
         </div>
 
+        <!-- Top bar: semester selector + actions -->
+        <div class="top-bar">
+            <div class="sem-selector">
+                <label for="semesterSelect">Semester:</label>
+                <select id="semesterSelect"></select>
+                <button class="btn btn-sm btn-primary" id="addSemesterBtn">+ New</button>
+                <button class="btn btn-sm btn-outline" id="renameSemesterBtn">Rename</button>
+                <button class="btn btn-sm btn-danger" id="deleteSemesterBtn">Delete</button>
+            </div>
+            <div style="margin-left:auto; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                <span class="badge-sem" id="semCountBadge">0 semesters</span>
+            </div>
+        </div>
+
         <div class="grid-2">
             <!-- LEFT: current semester subjects -->
             <div class="panel">
                 <h2 id="semesterTitle">Current Semester</h2>
+                
+                <!-- Quick Add GPA Row -->
+                <div class="quick-add-row">
+                    <button class="btn btn-success btn-sm" id="quickAddGpaBtn">Quick Add GPA</button>
+                    <span style="font-size:0.8rem; color:#4b6a8a;">Add semester GPA directly</span>
+                </div>
+
                 <div class="input-row">
                     <div class="input-group">
                         <label>Subject</label>
-                        <input type="text" id="subjectName" placeholder="e.g. Maths" value="" />
+                        <input type="text" id="subjectName" placeholder="e.g. Maths" />
                     </div>
                     <div class="input-group">
                         <label>Credits</label>
@@ -66,7 +73,6 @@
                 </div>
                 <div style="display:flex; gap:8px; margin-top:6px; flex-wrap:wrap;">
                     <button class="btn btn-sm btn-outline" id="clearSemesterBtn">Clear subjects</button>
-                    <button class="btn btn-sm btn-outline" id="quickAddGpaBtn">Quick add GPA</button>
                 </div>
             </div>
 
@@ -120,13 +126,14 @@
             </div>
         </div>
 
-        <!-- Quick Add GPA Modal (hidden by default) -->
-        <div id="quickGpaModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:1000;">
-            <div style="background:white; border-radius:24px; padding:30px; max-width:420px; width:90%;">
+        <!-- Quick Add GPA Modal -->
+        <div id="quickGpaModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:1000;">
+            <div style="background:white; border-radius:24px; padding:30px; max-width:420px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
                 <h3 style="margin-bottom:16px;">Quick Add Semester GPA</h3>
+                <p style="font-size:0.9rem; color:#4b6a8a; margin-bottom:16px;">Add this semester's GPA and total credits directly.</p>
                 <div class="input-group" style="margin-bottom:12px;">
                     <label>Semester GPA</label>
-                    <input type="number" id="quickGpaInput" step="0.01" min="0" placeholder="e.g. 3.5" />
+                    <input type="number" id="quickGpaInput" step="0.01" min="0" max="100" placeholder="e.g. 3.5" />
                 </div>
                 <div class="input-group" style="margin-bottom:16px;">
                     <label>Total Credits</label>
@@ -144,4 +151,4 @@
 
     <script src="script.js"></script>
 </body>
-                    </html>
+</html>
