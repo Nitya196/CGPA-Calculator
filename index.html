@@ -3,25 +3,47 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GPA · CGPA calculator + what-if</title>
-    <!-- External CSS -->
+    <title>GPA · CGPA Calculator</title>
     <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
     <div class="card">
-        <h1>📊 GPA · CGPA <small>calculator + what‑if</small></h1>
-        <div class="subhead">Add subjects with credits &amp; grades · see semester GPA &amp; running CGPA · simulate
-            future semesters</div>
+        <h1>GPA / CGPA Calculator</h1>
+        <div class="subhead">Manage each semester separately · add subjects with credits and grades · see CGPA · simulate future semesters</div>
+
+        <!-- Top bar: semester selector + actions -->
+        <div class="top-bar">
+            <div class="sem-selector">
+                <label for="semesterSelect">Semester:</label>
+                <select id="semesterSelect"></select>
+                <button class="btn btn-sm btn-primary" id="addSemesterBtn">+ New Sem</button>
+                <button class="btn btn-sm btn-outline" id="renameSemesterBtn">Rename</button>
+                <button class="btn btn-sm btn-danger" id="deleteSemesterBtn">Delete</button>
+            </div>
+            <div style="margin-left:auto; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                <span class="badge-sem" id="semCountBadge">0 semesters</span>
+            </div>
+        </div>
+
+        <!-- Scale selector -->
+        <div class="scale-bar">
+            <label>Grading Scale:</label>
+            <div class="scale-options">
+                <label><input type="radio" name="scale" value="4.0" checked /> 4.0 Scale</label>
+                <label><input type="radio" name="scale" value="5.0" /> 5.0 Scale</label>
+                <label><input type="radio" name="scale" value="10.0" /> 10.0 Scale</label>
+                <label><input type="radio" name="scale" value="100" /> Percentage</label>
+            </div>
+        </div>
 
         <div class="grid-2">
-            <!-- LEFT: current semester -->
+            <!-- LEFT: current semester subjects -->
             <div class="panel">
-                <h2>📘 Current semester</h2>
+                <h2 id="semesterTitle">Current Semester</h2>
                 <div class="input-row">
                     <div class="input-group">
                         <label>Subject</label>
-                        <input type="text" id="subjectName" placeholder="e.g. Maths" value="Maths" />
+                        <input type="text" id="subjectName" placeholder="e.g. Maths" value="" />
                     </div>
                     <div class="input-group">
                         <label>Credits</label>
@@ -29,52 +51,47 @@
                     </div>
                     <div class="input-group grade-select">
                         <label>Grade</label>
-                        <select id="subjectGrade">
-                            <option value="4.0">A (4.0)</option>
-                            <option value="3.7">A- (3.7)</option>
-                            <option value="3.3">B+ (3.3)</option>
-                            <option value="3.0" selected>B (3.0)</option>
-                            <option value="2.7">B- (2.7)</option>
-                            <option value="2.3">C+ (2.3)</option>
-                            <option value="2.0">C (2.0)</option>
-                            <option value="1.7">C- (1.7)</option>
-                            <option value="1.0">D (1.0)</option>
-                            <option value="0.0">F (0.0)</option>
-                        </select>
+                        <select id="subjectGrade"></select>
                     </div>
-                    <button class="btn btn-primary" id="addSubjectBtn">+ Add</button>
+                    <button class="btn btn-primary" id="addSubjectBtn">Add</button>
                 </div>
 
                 <div id="subjectListContainer" class="subject-list">
-                    <div class="empty-message">No subjects added yet.</div>
+                    <div class="empty-message">No subjects in this semester.</div>
                 </div>
 
-                <div class="stats" id="currentStats">
-                    <span>📈 Semester GPA <span class="value" id="semesterGpa">0.00</span></span>
-                    <span>📚 Total credits <span class="value" id="semesterCredits">0</span></span>
+                <div class="stats">
+                    <span>Semester GPA <span class="value" id="semesterGpa">0.00</span></span>
+                    <span>Credits <span class="value" id="semesterCredits">0</span></span>
                 </div>
-                <button class="btn btn-outline btn-sm" id="clearSemesterBtn" style="margin-top: 6px;">Clear
-                    semester</button>
+                <div style="display:flex; gap:8px; margin-top:6px; flex-wrap:wrap;">
+                    <button class="btn btn-sm btn-outline" id="clearSemesterBtn">Clear subjects</button>
+                    <button class="btn btn-sm btn-outline" id="quickAddGpaBtn">Quick add GPA</button>
+                </div>
             </div>
 
-            <!-- RIGHT: CGPA & what-if -->
+            <!-- RIGHT: CGPA + what-if -->
             <div class="panel">
-                <h2>📌 CGPA &amp; what‑if</h2>
-
-                <div style="background:#eef3fa; border-radius:40px; padding: 12px 18px; margin-bottom: 18px;">
-                    <div style="display:flex; justify-content:space-between; flex-wrap:wrap;">
-                        <span>📅 Running CGPA</span>
-                        <span class="value" id="cgpaDisplay" style="font-weight:700; font-size:1.4rem;">0.00</span>
+                <h2>Overall CGPA</h2>
+                <div style="background:#eef3fa; border-radius:40px; padding: 14px 20px; margin-bottom: 18px;">
+                    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; align-items:center;">
+                        <span style="font-weight:500;">Running CGPA</span>
+                        <span class="cgpa-big" id="cgpaDisplay">0.00</span>
                     </div>
-                    <div style="display:flex; justify-content:space-between; font-size:0.9rem; color:#295072;">
+                    <div style="display:flex; justify-content:space-between; font-size:0.9rem; color:#295072; margin-top:4px;">
                         <span>Total credits: <span id="totalCreditsCgpa">0</span></span>
-                        <span>Total grade points: <span id="totalPointsCgpa">0.0</span></span>
+                        <span>Total points: <span id="totalPointsCgpa">0.0</span></span>
                     </div>
+                </div>
+
+                <!-- Semester summary -->
+                <div id="allSemestersSummary" style="margin-bottom:16px;">
+                    <div class="empty-message" style="font-size:0.8rem;">Add semesters to see summary</div>
                 </div>
 
                 <!-- what-if future semesters -->
                 <div class="whatif-area">
-                    <h3>🔮 What‑if simulation</h3>
+                    <h3>What-if simulation</h3>
                     <div id="futureSemestersContainer">
                         <div class="empty-message" id="futureEmpty">No future semesters. Add one below.</div>
                     </div>
@@ -90,33 +107,41 @@
                         </div>
                         <div class="input-group grade-select" style="flex:0 0 100px;">
                             <label>Expected GPA</label>
-                            <select id="futureGpaSelect">
-                                <option value="4.0">4.0</option>
-                                <option value="3.7">3.7</option>
-                                <option value="3.3">3.3</option>
-                                <option value="3.0" selected>3.0</option>
-                                <option value="2.7">2.7</option>
-                                <option value="2.3">2.3</option>
-                                <option value="2.0">2.0</option>
-                            </select>
+                            <select id="futureGpaSelect"></select>
                         </div>
-                        <button class="btn btn-success" id="addFutureBtn">+ Add</button>
+                        <button class="btn btn-success" id="addFutureBtn">Add</button>
                     </div>
                     <div style="margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
-                        <button class="btn btn-primary" id="simulateBtn">📊 Simulate CGPA</button>
+                        <button class="btn btn-primary" id="simulateBtn">Simulate CGPA</button>
                         <button class="btn btn-outline btn-sm" id="clearFutureBtn">Clear all</button>
-                        <span id="simulatedResult"
-                            style="font-weight:600; margin-left: auto; background:#dce8f5; padding:4px 16px; border-radius:30px;">—</span>
+                        <span id="simulatedResult" style="font-weight:600; margin-left: auto; background:#dce8f5; padding:4px 16px; border-radius:30px;">--</span>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="footer-note">Grades: A=4.0 · A-=3.7 · B+=3.3 · B=3.0 · B-=2.7 · C+=2.3 · C=2.0 · C-=1.7 · D=1.0 ·
-            F=0.0</div>
+
+        <!-- Quick Add GPA Modal (hidden by default) -->
+        <div id="quickGpaModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:1000;">
+            <div style="background:white; border-radius:24px; padding:30px; max-width:420px; width:90%;">
+                <h3 style="margin-bottom:16px;">Quick Add Semester GPA</h3>
+                <div class="input-group" style="margin-bottom:12px;">
+                    <label>Semester GPA</label>
+                    <input type="number" id="quickGpaInput" step="0.01" min="0" placeholder="e.g. 3.5" />
+                </div>
+                <div class="input-group" style="margin-bottom:16px;">
+                    <label>Total Credits</label>
+                    <input type="number" id="quickCreditsInput" step="0.5" min="0" placeholder="e.g. 15" />
+                </div>
+                <div style="display:flex; gap:10px; justify-content:flex-end;">
+                    <button class="btn btn-outline" id="quickGpaCancel">Cancel</button>
+                    <button class="btn btn-primary" id="quickGpaConfirm">Add</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-note" id="footerNote">Grades: A=4.0 · A-=3.7 · B+=3.3 · B=3.0 · B-=2.7 · C+=2.3 · C=2.0 · C-=1.7 · D=1.0 · F=0.0</div>
     </div>
 
-    <!-- External JavaScript -->
     <script src="script.js"></script>
 </body>
-
-</html>
+                    </html>
