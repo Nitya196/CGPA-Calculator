@@ -216,12 +216,17 @@
             let html = '';
             for (let s of sem.subjects) {
                 const displayGrade = s.gradePoint;
+                // Check if this is a quick-add entry (starts with "Semester GPA")
+                const isQuickAdd = s.name && s.name.startsWith('Semester GPA');
+                const displayName = isQuickAdd ? `📊 ${s.name}: ${s.gradePoint.toFixed(2)}` : escapeHtml(s.name);
+                const extraClass = isQuickAdd ? ' quick-add-item' : '';
+                
                 html += `
-                    <div class="subject-item" data-id="${s.id}">
+                    <div class="subject-item${extraClass}" data-id="${s.id}">
                         <div class="info">
-                            <strong>${escapeHtml(s.name)}</strong>
+                            <strong>${displayName}</strong>
                             <span class="badge">${s.credits} cr</span>
-                            <span class="badge">${displayGrade.toFixed(1)}</span>
+                            ${!isQuickAdd ? `<span class="badge">${displayGrade.toFixed(1)}</span>` : ''}
                         </div>
                         <span class="del" data-id="${s.id}">×</span>
                     </div>
@@ -277,9 +282,11 @@
             const sem = semesters[id];
             if (!sem) return;
             const data = calculateGPA(sem.subjects);
+            const hasQuickAdd = sem.subjects.some(s => s.name && s.name.startsWith('Semester GPA'));
+            const typeLabel = hasQuickAdd ? ' (Quick Add)' : '';
             html += `
                 <div class="sem-summary">
-                    <span><span class="label">${escapeHtml(sem.name)}</span></span>
+                    <span><span class="label">${escapeHtml(sem.name)}${typeLabel}</span></span>
                     <span><span class="label">GPA:</span> <span class="val">${data.gpa.toFixed(2)}</span></span>
                     <span><span class="label">Credits:</span> <span class="val">${data.totalCredits.toFixed(1)}</span></span>
                     <span><span class="label">Subjects:</span> <span class="val">${sem.subjects.length}</span></span>
@@ -452,9 +459,19 @@
         }
         const sem = getCurrentSemester();
         if (!sem) return;
+        
+        // Clear existing subjects if any (optional - we'll add a confirmation)
+        if (sem.subjects.length > 0) {
+            if (!confirm('This semester already has subjects. Quick Add will replace them. Continue?')) {
+                return;
+            }
+            sem.subjects = [];
+        }
+        
+        // Add a single subject that represents the entire semester
         sem.subjects.push({
             id: idCounter++,
-            name: 'Semester GPA (quick)',
+            name: 'Semester GPA (Quick Add)',
             credits: credits,
             gradePoint: gpa
         });
