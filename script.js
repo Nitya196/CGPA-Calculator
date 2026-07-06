@@ -162,6 +162,13 @@
         return id;
     }
 
+    // Check if a semester was added via Quick Add
+    function isQuickAddSemester(semester) {
+        if (!semester || !semester.subjects || semester.subjects.length === 0) return false;
+        // If there's exactly one subject and its name starts with "Semester GPA", it's a quick add
+        return semester.subjects.length === 1 && semester.subjects[0].name && semester.subjects[0].name.startsWith('Semester GPA');
+    }
+
     // ---------- Grade dropdown builder ----------
     function populateGradeDropdown(selectElement, scale) {
         const config = gradeMappings[scale];
@@ -282,14 +289,16 @@
             const sem = semesters[id];
             if (!sem) return;
             const data = calculateGPA(sem.subjects);
-            const hasQuickAdd = sem.subjects.some(s => s.name && s.name.startsWith('Semester GPA'));
-            const typeLabel = hasQuickAdd ? ' (Quick Add)' : '';
+            const isQuickAdd = isQuickAddSemester(sem);
+            const typeLabel = isQuickAdd ? ' (Quick Add)' : '';
+            const subjectDisplay = isQuickAdd ? '—' : sem.subjects.length;
+            
             html += `
                 <div class="sem-summary">
                     <span><span class="label">${escapeHtml(sem.name)}${typeLabel}</span></span>
                     <span><span class="label">GPA:</span> <span class="val">${data.gpa.toFixed(2)}</span></span>
                     <span><span class="label">Credits:</span> <span class="val">${data.totalCredits.toFixed(1)}</span></span>
-                    <span><span class="label">Subjects:</span> <span class="val">${sem.subjects.length}</span></span>
+                    <span><span class="label">Subjects:</span> <span class="val">${subjectDisplay}</span></span>
                 </div>
             `;
         });
@@ -365,6 +374,15 @@
     function addSubject() {
         const sem = getCurrentSemester();
         if (!sem) return;
+        
+        // If this is a quick-add semester, warn user
+        if (isQuickAddSemester(sem)) {
+            if (!confirm('This semester was added via Quick Add. Adding individual subjects will replace the quick add entry. Continue?')) {
+                return;
+            }
+            sem.subjects = [];
+        }
+        
         const name = subjectName.value.trim() || 'Untitled';
         const credits = parseFloat(subjectCredits.value);
         if (isNaN(credits) || credits <= 0) {
@@ -438,6 +456,15 @@
 
     function quickAddGpa() {
         const config = getScaleConfig();
+        const sem = getCurrentSemester();
+        
+        // If semester has subjects, warn about replacement
+        if (sem && sem.subjects.length > 0) {
+            if (!confirm('This semester already has subjects. Quick Add will replace them. Continue?')) {
+                return;
+            }
+        }
+        
         quickGpaModal.style.display = 'flex';
         quickGpaInput.value = '';
         quickCreditsInput.value = '';
@@ -460,13 +487,8 @@
         const sem = getCurrentSemester();
         if (!sem) return;
         
-        // Clear existing subjects if any (optional - we'll add a confirmation)
-        if (sem.subjects.length > 0) {
-            if (!confirm('This semester already has subjects. Quick Add will replace them. Continue?')) {
-                return;
-            }
-            sem.subjects = [];
-        }
+        // Clear existing subjects
+        sem.subjects = [];
         
         // Add a single subject that represents the entire semester
         sem.subjects.push({
